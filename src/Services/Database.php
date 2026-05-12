@@ -57,6 +57,16 @@ class Database
                 type_operation TEXT DEFAULT 'emprunt',
                 FOREIGN KEY (document_id) REFERENCES documents(id),
                 FOREIGN KEY (membre_id) REFERENCES membres(id)
+            )",
+            "CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                role TEXT NOT NULL DEFAULT 'user',
+                nom TEXT NOT NULL,
+                prenom TEXT NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                date_creation TEXT NOT NULL
             )"
         ];
         
@@ -87,11 +97,33 @@ class Database
         // Emprunts en cours
         $this->inserer('emprunts', ['document_id' => 1, 'membre_id' => 1, 'dateEmprunt' => date('Y-m-d H:i:s', strtotime('-5 days')), 'dateRetour' => null]);
         $this->inserer('emprunts', ['document_id' => 3, 'membre_id' => 2, 'dateEmprunt' => date('Y-m-d H:i:s', strtotime('-3 days')), 'dateRetour' => null]);
+
+        // Ajouter un administrateur par défaut
+        $this->inserer('users', [
+            'username' => 'admin',
+            'password' => password_hash('admin123', PASSWORD_DEFAULT),
+            'role' => 'admin',
+            'nom' => 'Admin',
+            'prenom' => 'Super',
+            'email' => 'admin@bibliotheque.com',
+            'date_creation' => date('Y-m-d H:i:s')
+        ]);
+        
+        // Ajouter un utilisateur normal par défaut
+        $this->inserer('users', [
+            'username' => 'user',
+            'password' => password_hash('user123', PASSWORD_DEFAULT),
+            'role' => 'user',
+            'nom' => 'Dupont',
+            'prenom' => 'Jean',
+            'email' => 'jean.dupont@email.com',
+            'date_creation' => date('Y-m-d H:i:s')
+        ]);
     }
     
     public function lireTous(string $table): array
     {
-        $tablesAutorisees = ['documents', 'membres', 'emprunts'];
+        $tablesAutorisees = ['documents', 'membres', 'emprunts', 'users'];
         if (!in_array($table, $tablesAutorisees)) {
             throw new \InvalidArgumentException("Table non autorisée : $table");
         }
@@ -102,7 +134,7 @@ class Database
     
     public function lireParId(string $table, int $id): ?array
     {
-        $tablesAutorisees = ['documents', 'membres', 'emprunts'];
+        $tablesAutorisees = ['documents', 'membres', 'emprunts', 'users'];
         if (!in_array($table, $tablesAutorisees)) {
             throw new \InvalidArgumentException("Table non autorisée : $table");
         }
@@ -115,7 +147,7 @@ class Database
     
     public function inserer(string $table, array $donnees): int
     {
-        $tablesAutorisees = ['documents', 'membres', 'emprunts'];
+        $tablesAutorisees = ['documents', 'membres', 'emprunts', 'users'];
         if (!in_array($table, $tablesAutorisees)) {
             throw new \InvalidArgumentException("Table non autorisée : $table");
         }
@@ -129,7 +161,7 @@ class Database
     
     public function mettreAJour(string $table, int $id, array $donnees): void
     {
-        $tablesAutorisees = ['documents', 'membres', 'emprunts'];
+        $tablesAutorisees = ['documents', 'membres', 'emprunts', 'users'];
         if (!in_array($table, $tablesAutorisees)) {
             throw new \InvalidArgumentException("Table non autorisée : $table");
         }
@@ -146,7 +178,7 @@ class Database
     
     public function supprimer(string $table, int $id): void
     {
-        $tablesAutorisees = ['documents', 'membres', 'emprunts'];
+        $tablesAutorisees = ['documents', 'membres', 'emprunts', 'users'];
         if (!in_array($table, $tablesAutorisees)) {
             throw new \InvalidArgumentException("Table non autorisée : $table");
         }

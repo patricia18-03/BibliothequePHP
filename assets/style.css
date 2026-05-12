@@ -543,3 +543,91 @@ select:focus {
         font-size: 20px;
     }
 }
+/* Styles pour l'authentification Login/Register */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+}
+
+.auth-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 500px;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 10px;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 12px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s;
+    color: #7f8c8d;
+}
+
+.auth-tab:hover {
+    background: #ecf0f1;
+}
+
+.auth-tab.active {
+    background: #3498db;
+    color: white;
+}
+
+.auth-form h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #2c3e50;
+}
+
+.form-row-2 {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-row-2 .form-group {
+    flex: 1;
+}
+
+.btn-register {
+    background: #27ae60;
+    color: white;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+}
+
+.btn-register:hover {
+    background: #219a52;
+    transform: translateY(-2px);
+}
+
+.auth-info {
+    margin-top: 20px;
+    padding: 15px;
+    background: #ecf0f1;
+    border-radius: 10px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.auth-info p {
+    margin: 5px 0;
+}
