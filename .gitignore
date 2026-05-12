@@ -1,0 +1,26 @@
+# Base de données SQLite
+*.sqlite
+*.sqlite-journal
+*.db
+*.db-journal
+
+# Fichiers de log
+*.log
+bibliotheque.log
+
+# Fichiers temporaires
+*.tmp
+*.temp
+*.backup_*
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Fichiers de backup
+*.backup_*
