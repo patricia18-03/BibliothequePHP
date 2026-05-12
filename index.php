@@ -211,6 +211,7 @@ function pageStats(Bibliotheque $biblio): void {
     <meta charset="UTF-8">
     <title>Bibliothèque Municipale</title>
     <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/script.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -240,5 +241,8 @@ function pageStats(Bibliotheque $biblio): void {
             ?>
         </div>
     </div>
+    
+    <!-- Bouton retour en haut -->
+    <a href="#" class="scroll-top" id="scrollTop" title="Retour en haut">↑</a>
 </body>
 </html>
