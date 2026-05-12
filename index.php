@@ -79,7 +79,7 @@ function pageAccueil(Bibliotheque $biblio): void {
                     <td><?= ucfirst($doc->getType()) ?></td>
                     <td><?= htmlspecialchars($doc->getNom()) ?></td>
                     <td><?= htmlspecialchars($doc->getAuteur()) ?></td>
-                    <td><?= $doc->getDateAjout() ?></td>
+                    <td><?= htmlspecialchars($doc->getDateAjout()) ?></td>
                     <td><?= htmlspecialchars($doc->getResume()) ?></td>
                     <td><a href="?action=detail&id=<?= $doc->getId() ?>" class="btn btn-detail">Détail</a></td>
                 </tr>
@@ -102,60 +102,67 @@ function pageDetail(Bibliotheque $biblio, int $id): void {
     $disponible = $estEmpruntable ? $doc->estDisponible() : false;
     $emprunteur = $estEmpruntable ? $doc->getEmprunteur() : null;
     ?>
-    <h2><?= htmlspecialchars($doc) ?></h2>
+    <h2><?= htmlspecialchars((string)$doc) ?></h2>
     <table>
         <tr><th>Type</th><td><?= ucfirst($doc->getType()) ?></td></tr>
         <tr><th>Titre</th><td><?= htmlspecialchars($doc->getNom()) ?></td></tr>
         <tr><th>Auteur</th><td><?= htmlspecialchars($doc->getAuteur()) ?></td></tr>
-        <tr><th>Date d'ajout</th><td><?= $doc->getDateAjout() ?></td></tr>
+        <tr><th>Date d'ajout</th><td><?= htmlspecialchars($doc->getDateAjout()) ?></td></tr>
         <tr><th>Résumé</th><td><?= htmlspecialchars($doc->getResume()) ?></td></tr>
         <tr><th>Disponibilité</th><td class="<?= $disponible ? 'disponible' : 'indisponible' ?>"><?= $disponible ? 'Disponible' : 'Emprunté' ?></td></tr>
         <?php if ($emprunteur): ?>
-            <tr><th>Emprunté par</th><td><?= htmlspecialchars($emprunteur) ?></td></tr>
+            <tr><th>Emprunté par</th><td><?= htmlspecialchars((string)$emprunteur) ?></td></tr>
         <?php endif; ?>
-        <tr><th>Créé le</th><td><?= $doc->getCreeLe() ?></td></tr>
-        <tr><th>Modifié le</th><td><?= $doc->getModifieLe() ?: '-' ?></td></tr>
+        <tr><th>Créé le</th><td><?= htmlspecialchars($doc->getCreeLe() ?? '-') ?></td></tr>
+        <tr><th>Modifié le</th><td><?= htmlspecialchars($doc->getModifieLe() ?? '-') ?></td></tr>
     </table>
     
-    <?php if ($estEmpruntable): ?>
-        <form method="POST" style="display:inline">
-            <input type="hidden" name="document_id" value="<?= $id ?>">
-            <?php if ($disponible): ?>
+    <div style="margin: 1rem 0;">
+        <?php if ($estEmpruntable): ?>
+            <form method="POST" style="display: inline-block; margin-right: 10px;">
+                <input type="hidden" name="document_id" value="<?= $id ?>">
+                <?php if ($disponible): ?>
+                    <select name="membre_id" required>
+                        <option value="">Choisir un membre...</option>
+                        <?php foreach ($membres as $membre): ?>
+                            <option value="<?= $membre->getId() ?>"><?= htmlspecialchars((string)$membre) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button type="submit" name="action" value="emprunter" class="btn btn-emprunter">📖 Emprunter</button>
+                <?php else: ?>
+                    <button type="submit" name="action" value="retourner" class="btn btn-retourner">🔄 Retourner</button>
+                <?php endif; ?>
+            </form>
+        <?php endif; ?>
+        
+        <?php if ($estReservable && $disponible): ?>
+            <form method="POST" style="display: inline-block;">
+                <input type="hidden" name="document_id" value="<?= $id ?>">
                 <select name="membre_id" required>
                     <option value="">Choisir un membre...</option>
                     <?php foreach ($membres as $membre): ?>
-                        <option value="<?= $membre->getId() ?>"><?= htmlspecialchars($membre) ?></option>
+                        <option value="<?= $membre->getId() ?>"><?= htmlspecialchars((string)$membre) ?></option>
                     <?php endforeach; ?>
                 </select>
-                <button type="submit" name="action" value="emprunter" class="btn btn-emprunter">📖 Emprunter</button>
-            <?php else: ?>
-                <button type="submit" name="action" value="retourner" class="btn btn-retourner">🔄 Retourner</button>
-            <?php endif; ?>
-        </form>
-    <?php endif; ?>
+                <button type="submit" name="action" value="reserver" class="btn btn-reserver">⭐ Réserver</button>
+            </form>
+        <?php endif; ?>
+    </div>
     
-    <?php if ($estReservable && $disponible): ?>
-        <form method="POST" style="display:inline">
-            <input type="hidden" name="document_id" value="<?= $id ?>">
-            <select name="membre_id" required>
-                <option value="">Choisir un membre...</option>
-                <?php foreach ($membres as $membre): ?>
-                    <option value="<?= $membre->getId() ?>"><?= htmlspecialchars($membre) ?></option>
-                <?php endforeach; ?>
-            </select>
-            <button type="submit" name="action" value="reserver" class="btn btn-reserver">⭐ Réserver</button>
-        </form>
-    <?php endif; ?>
-    
-    <div style="margin-top: 1rem"><a href="?action=accueil" class="btn">⬅ Retour</a></div>
+    <div style="margin-top: 1rem">
+        <a href="?action=accueil" class="btn">⬅ Retour à l'accueil</a>
+    </div>
     <?php
 }
 
 function pageMembres(Bibliotheque $biblio): void {
     $membres = $biblio->getMembres();
     ?>
+    <h2>👥 Liste des membres</h2>
     <table>
-        <thead><tr><th>Prénom</th><th>Nom</th><th>Email</th><th>Date inscription</th><th>Emprunts en cours</th></tr></thead>
+        <thead>
+            <tr><th>Prénom</th><th>Nom</th><th>Email</th><th>Date inscription</th><th>Emprunts en cours</th></tr>
+        </thead>
         <tbody>
             <?php foreach ($membres as $membre): ?>
                 <?php $emprunts = $biblio->getEmpruntsMembre($membre->getId()); ?>
@@ -163,12 +170,12 @@ function pageMembres(Bibliotheque $biblio): void {
                     <td><?= htmlspecialchars($membre->getPrenom()) ?></td>
                     <td><?= htmlspecialchars($membre->getNom()) ?></td>
                     <td><?= htmlspecialchars($membre->getEmail()) ?></td>
-                    <td><?= $membre->getDateInscription() ?></td>
+                    <td><?= htmlspecialchars($membre->getDateInscription()) ?></td>
                     <td>
                         <?php if ($emprunts): ?>
-                            <ul>
+                            <ul style="margin: 0; padding-left: 20px;">
                             <?php foreach ($emprunts as $e): ?>
-                                <li><?= htmlspecialchars($e['document']->getNom()) ?> (depuis <?= $e['dateEmprunt'] ?>)</li>
+                                <li><?= htmlspecialchars($e['document']->getNom()) ?> (depuis <?= htmlspecialchars($e['dateEmprunt']) ?>)</li>
                             <?php endforeach; ?>
                             </ul>
                         <?php else: ?>
@@ -185,6 +192,7 @@ function pageMembres(Bibliotheque $biblio): void {
 function pageStats(Bibliotheque $biblio): void {
     $stats = $biblio->getStatistiques();
     ?>
+    <h2>📊 Statistiques de la bibliothèque</h2>
     <div class="stats-grid">
         <div class="stat-card"><h3><?= $stats['total_documents'] ?></h3><p>Total documents</p></div>
         <div class="stat-card"><h3><?= $stats['total_membres'] ?></h3><p>Membres inscrits</p></div>
